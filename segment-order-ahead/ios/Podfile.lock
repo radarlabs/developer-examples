@@ -1,0 +1,20 @@
+PODS:
+  - Analytics (4.1.4)
+  - RadarSDK (3.1.8)
+
+DEPENDENCIES:
+  - Analytics (~> 4.1)
+  - RadarSDK (~> 3.1)
+
+SPEC REPOS:
+  trunk:
+    - Analytics
+    - RadarSDK
+
+SPEC CHECKSUMS:
+  Analytics: 7bdc735c456434b4eaa2eacdcf122bb03d51ede7
+  RadarSDK: 190c22677537029b4a4bddcd8d9e5a86fe557d36
+
+PODFILE CHECKSUM: 086ec96858abe4eb622767db90472265ddc3ce6d
+
+COCOAPODS: 1.10.1
