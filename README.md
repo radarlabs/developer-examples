@@ -1,6 +1,6 @@
 # Radar developer demos
 
-This is a collection of opens-source developer demos showcasing the
+This is a collection of open-source developer demos showcasing the
 Radar platform. 
 
 If you have any questions on usage or see any issues, feel free to open
