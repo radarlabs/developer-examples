@@ -54,7 +54,7 @@ final class TripManager: ObservableObject {
         Radar.startTrip(options: tripOptions, completionHandler: completionHandler)
     }
     
-    func toggleTripState() {
+    func simulateTrip() {
         if self.tripState == .loading {
             return
         }
@@ -65,8 +65,12 @@ final class TripManager: ObservableObject {
             var currentStep: Int32 = 0
             if status == RadarStatus.success {
                 Radar.mockTracking(
-                    origin: CLLocation(latitude: CLLocationDegrees(40.69770571883561), longitude: CLLocationDegrees(-73.96773934364319)),
-                    destination: CLLocation(latitude: CLLocationDegrees(40.70441607862966), longitude: CLLocationDegrees(-73.98654699325562)),
+                    origin: CLLocation(
+                        latitude: CLLocationDegrees(40.69770571883561),
+                        longitude: CLLocationDegrees(-73.96773934364319)),
+                    destination: CLLocation(
+                        latitude: CLLocationDegrees(40.70441607862966),
+                        longitude: CLLocationDegrees(-73.98654699325562)),
                     mode: RadarRouteMode.car,
                     steps: numberOfSteps,
                     interval: TimeInterval(1)) { status, location, events, user in
@@ -83,6 +87,7 @@ final class TripManager: ObservableObject {
                         currentStep += 1
                         if currentStep == numberOfSteps {
                             self.tripState = .arrived
+                            Radar.completeTrip()
                         }
                     }
             } else {
@@ -114,7 +119,7 @@ struct DemoView: View {
                     .padding()
             }
             
-            Button(action: { self.tripManager.toggleTripState() }) {
+            Button(action: { self.tripManager.simulateTrip() }) {
                 switch self.tripManager.tripState {
                 case .uninitialized:
                     Text("Start Trip 🏃‍♂️")
