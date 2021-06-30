@@ -7,6 +7,5 @@ target 'SegmentOrderAheadDemo (iOS)' do
 
   # Pods for SegmentOrderAheadDemo (iOS)
   pod 'RadarSDK', '~> 3.1'
-  pod 'Analytics', '~> 4.1'
 
 end

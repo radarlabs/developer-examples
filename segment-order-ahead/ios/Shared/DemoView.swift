@@ -9,51 +9,14 @@ import SwiftUI
 import MapKit
 import Foundation
 import RadarSDK
-import Segment
 
 enum TripState {
-    case uninitialized, loading, error, started, approaching, arrived
+    case uninitialized, loading, error, arrived
 }
 
 final class TripManager: ObservableObject {
     @Published var tripState: TripState = .uninitialized
     @Published var events: [RadarEvent]? = nil
-    
-    func sendEventsToSegment(events: [RadarEvent]?) {
-        for event in events ?? [] {
-            let eventType = RadarEvent.string(for: event.type) ?? "unknown"
-            let tripStatus = event.trip?.status ?? RadarTripStatus.unknown;
-            
-            var payload: [String: Any] = [String: String]()
-            switch tripStatus {
-            case RadarTripStatus.started:
-                payload = [
-                    "tripStatus": "started",
-                    "tripId": event.trip?._id,
-                    "tripMetadata": event.trip?.metadata
-                ]
-            case RadarTripStatus.approaching:
-                payload = [
-                    "tripStatus": "approaching",
-                    "tripId": event.trip?._id,
-                    "tripMetadata": event.trip?.metadata
-                ]
-            case RadarTripStatus.arrived:
-                payload = [
-                    "tripStatus": "arrived",
-                    "tripId": event.trip?._id,
-                    "tripMetadata": event.trip?.metadata
-                ]
-            default:
-                break
-            }
-            
-            Analytics
-                .shared()
-                .track(eventType, properties: payload)
-        }
-    }
-    
     
     func simulateLocationUpdate(latitude: Double, longitude: Double, nextTripState: TripState) {
         let location = CLLocation(
@@ -69,7 +32,6 @@ final class TripManager: ObservableObject {
             if status == RadarStatus.success {
                 self.tripState = nextTripState
                 self.events = events
-                self.sendEventsToSegment(events: events)
             } else {
                 self.tripState = .error
                 self.events = nil
@@ -79,50 +41,53 @@ final class TripManager: ObservableObject {
     
     func setupTrip(completionHandler: @escaping RadarTripCompletionHandler) {
         // set up a trip
-        let tripOptions = RadarTripOptions(externalId: "my-first-burger-pickup")
+        let number = Int.random(in: 0...1000)
+        let tripOptions = RadarTripOptions(externalId: "curbside-trip-\(number)")
         tripOptions.destinationGeofenceTag = "curbside-stores"
         tripOptions.destinationGeofenceExternalId = "my-store-1"
         tripOptions.mode = .car
         tripOptions.metadata = [
             "Customer Name": "Jon Hammburglar",
             "Car Model": "Hamburglar Mobile",
-            "Phone": "5551234567"
+            "Phone": "TEST_PHONE_NUMBER"
         ]
         Radar.startTrip(options: tripOptions, completionHandler: completionHandler)
     }
     
     func toggleTripState() {
-        switch self.tripState {
-        case .uninitialized:
-            setupTrip() { (status) in
-                if status == RadarStatus.success {
-                    self.simulateLocationUpdate(
-                        latitude: 40.69770571883561,
-                        longitude:  -73.96773934364319,
-                        nextTripState: .started
-                    )
-                } else {
-                    self.tripState = .error
-                }
+        if self.tripState == .loading {
+            return
+        }
+        
+        self.tripState = .loading
+        setupTrip { status in
+            let numberOfSteps: Int32 = 8
+            var currentStep: Int32 = 0
+            if status == RadarStatus.success {
+                Radar.mockTracking(
+                    origin: CLLocation(latitude: CLLocationDegrees(40.69770571883561), longitude: CLLocationDegrees(-73.96773934364319)),
+                    destination: CLLocation(latitude: CLLocationDegrees(40.70441607862966), longitude: CLLocationDegrees(-73.98654699325562)),
+                    mode: RadarRouteMode.car,
+                    steps: numberOfSteps,
+                    interval: TimeInterval(1)) { status, location, events, user in
+                        // handle error case
+                        if status != RadarStatus.success {
+                            self.tripState = .error
+                            return
+                        }
+
+                        // update trip step
+                        self.events = events
+                        
+                        // check if trip is done
+                        currentStep += 1
+                        if currentStep == numberOfSteps {
+                            self.tripState = .arrived
+                        }
+                    }
+            } else {
+                self.tripState = .error
             }
-        case .started:
-            simulateLocationUpdate(
-                latitude: 40.70221190166743,
-                longitude: -73.98119330406189,
-                nextTripState: .approaching
-            )
-        case .approaching:
-            simulateLocationUpdate(
-                latitude: 40.70441607862966,
-                longitude: -73.98654699325562,
-                nextTripState: .arrived
-            )
-        case .loading:
-            break
-        case .error:
-            break
-        case .arrived:
-            break
         }
     }
 }
@@ -153,10 +118,6 @@ struct DemoView: View {
                 switch self.tripManager.tripState {
                 case .uninitialized:
                     Text("Start Trip 🏃‍♂️")
-                case .started:
-                    Text("Trip Started 🏁")
-                case .approaching:
-                    Text("Approaching 🚗")
                 case .arrived:
                     Text("Arrived 🍔")
                 case .loading:

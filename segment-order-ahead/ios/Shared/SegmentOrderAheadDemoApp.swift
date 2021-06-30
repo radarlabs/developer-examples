@@ -7,7 +7,6 @@
 
 import SwiftUI
 import RadarSDK
-import Segment
 
 @main
 struct SegmentOrderAheadDemoApp: App {
@@ -20,11 +19,6 @@ struct SegmentOrderAheadDemoApp: App {
         // initialize the Radar SDK and user
         Radar.initialize(publishableKey: "PUBLISHABLE_KEY")
         Radar.setUserId(userId)
-        
-        // initialize Segment and user
-        let configuration = AnalyticsConfiguration(writeKey: "SEGMENT_KEY")
-        Analytics.setup(with: configuration)
-        Analytics.shared().identify(userId, traits: ["name": "Jon Hammburglar"])
         
         // request location permission
         let status = self.locationManager.authorizationStatus

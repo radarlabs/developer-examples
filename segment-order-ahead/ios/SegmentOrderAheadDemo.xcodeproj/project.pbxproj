@@ -101,7 +101,6 @@
 				4F681C5D26701503000A61BF /* Sources */,
 				4F681C5E26701503000A61BF /* Frameworks */,
 				4F681C5F26701503000A61BF /* Resources */,
-				079C2BE6F1CA15B917EB0A52 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -156,23 +155,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		079C2BE6F1CA15B917EB0A52 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SegmentOrderAheadDemo (iOS)/Pods-SegmentOrderAheadDemo (iOS)-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SegmentOrderAheadDemo (iOS)/Pods-SegmentOrderAheadDemo (iOS)-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SegmentOrderAheadDemo (iOS)/Pods-SegmentOrderAheadDemo (iOS)-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		D27E8CC550CF743EE1A05E8D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
